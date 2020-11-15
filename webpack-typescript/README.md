@@ -14,6 +14,7 @@ We continue from the previous article [basic setup webpack](https://blog.adev42.
     - [`webpack.config.js`](#webpackconfigjs)
       - [Code](#code-1)
       - [Explanation](#explanation-1)
+    - [Structure of project](#structure-of-project)
   - [Reference](#reference)
 
 ## Install webpack and loaders packages
@@ -314,6 +315,31 @@ module.exports = (env, agrv) => {
   - **devServer.hot**: The mode `hot reload`. By default, on the dev server, webpack will refresh the page every time when there is a slight change in the code. The `hot reload` helps use to see the change but don't need reload page.
   - **devServer.publicPath**: the relative path from root directory pointing to the build directory. Here is `/dist/` --> / is root folder
   - **devServer.watchContentBase**: If you have the change in the `index.html`, browser will reload automatically.
+
+### Structure of project
+```tree
+.
+├── dist
+│   ├── bundle.bbc536.js
+│   ├── index.html
+│   └── src
+│       └── logo.png
+├── package.json
+├── public
+│   └── index.html
+├── README.md
+├── src
+│   ├── add.ts
+│   ├── app.d.ts
+│   ├── index.scss
+│   ├── index.ts
+│   ├── loadImage.ts
+│   ├── logo.png
+│   └── subtract.ts
+├── tsconfig.json
+├── webpack.config.js
+└── yarn.lock
+```
 ## Reference
 - [Source code GitHub](https://github.com/tienduy-nguyen/webpack/tree/master/webpack-typescript)
 
