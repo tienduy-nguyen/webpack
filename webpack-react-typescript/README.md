@@ -40,3 +40,55 @@ If you do not have any knowledge about webpack, you can refer my two previous ar
   $ yarn add -D eslint eslint-config-react-app eslint-loader eslint-plugin-flowtype eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react eslint-plugin-react-hooks @typescript-eslint/eslint-plugin @typescript-eslint/parser prettier eslint-plugin-prettier eslint-config-prettier
   ```
   Except `prettier`, `eslint-config-prettier` and `eslint-plugin-prettier` the rest are plugins used by `create-react-app`.
+
+  **Create file configuration:**:
+  - `.eslintrc`
+  ```json
+  {
+    "extends": ["react-app", "prettier"],
+    "plugins": ["react", "prettier"],
+    "rules": {
+      "prettier/prettier": [
+        "warn",
+        {
+          "arrowParens": "avoid",
+          "semi": false,
+          "trailingComma": "none",
+          "endOfLine": "lf",
+          "tabWidth": 2,
+          "printWidth": 80,
+          "useTabs": false
+        }
+      ],
+      "no-console": "warn"
+    }
+  }
+  ```
+  - `.eslintignore`
+  ```
+  /src/serviceWorker.ts
+  /src/setupTests.ts
+  ```
+  - `.prettierrc`
+  ```json
+  {
+    "arrowParens": "avoid",
+    "semi": false,
+    "trailingComma": "none",
+    "endOfLine": "lf",
+    "tabWidth": 2,
+    "printWidth": 80,
+    "useTabs": false
+  }
+  ```
+  - `prettierignore`
+  ```
+  .cache
+  package-lock.json
+  ```
+- Add scripts to `package.json`
+  ```json
+  scripts:{
+    
+  }
+  ```
