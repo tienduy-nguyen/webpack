@@ -266,10 +266,17 @@ If you do not have any knowledge about webpack, you can refer my two previous ar
   ```
 - Explanation
   
-  I have explain the details of many definition in the `webpack.config.js` file in my two previous article [setup webpack basic](https://blog.adev42.com/basic-setup-webpack) & [setup webpack typescript](https://blog.adev42.com/setup-webpack-with-typescript). In this article, I just explain the new definitions.
-  - `isDev`: We have 2 modes: **development** and **production** equivalent to dev and build. These two modes are passed through the `--mode` in the script in `package.json`.
-  - `isAnalyze`: 
+  I have explain the details of many definition in the `webpack.config.js` file in my two previous article [setup webpack basic](https://blog.adev42.com/basic-setup-webpack) & [setup webpack typescript](https://blog.adev42.com/setup-webpack-with-typescript). In this article, I just explain the new definitions..
 
+  - `isDev`: We have 2 modes: **development** and **production** equivalent to dev and build. These two modes are passed through the `--mode` in the script in `package.json`.
+  - `isAnalyze`: To define use `BundleAnalyzerPlugin` or not
+  - `basePlugins`: plugins use in dev mode 
+  - CopyPlugin: copy all files in **public** folder to **build** folder, except `index.html`. Because we have already plugin `HtmlWebpackPlugin` do it.
+  - `webpack.ProgressPlugin()` show by percentage of progress when run webpack
+  - `CompressionPlugin()`: compress build files to **gzip**
+  - `prodPlugins`: plugins used in mode production.
+  - `plugins`: Contains plugins of webpack
+  - `performance.maxEntrypointSize`: When a build file exceeds this limit (in bytes), it will be warned on the terminal.
 
   
 ## Demo code
@@ -293,6 +300,15 @@ If you do not have any knowledge about webpack, you can refer my two previous ar
 
   </html>
   ```
+  All others codes are created as a template of Webpack React TS project.
+- Run and build
+  ```bash
+  $ yarn start # Run dev enviroment
+  $ yarn build # Build
+  $ yarn build:analyze # Build and analyze project
+  
+  ```
+  We can use `yarn lint`, `yarn lint:fix`, `yarn prettier` and `yarn prettier:fix` to run the command check and fix syntax code with eslint or prettier.
 
 ## Structure folder
 
