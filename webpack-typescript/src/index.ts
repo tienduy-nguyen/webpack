@@ -1,5 +1,5 @@
 import { subtract } from './subtract';
-import { add } from './add';
+import { add } from '@@/src/add';
 import './loadImage';
 import './index.scss';
 console.log(`1 + 2 = ${add(1, 2)}`);

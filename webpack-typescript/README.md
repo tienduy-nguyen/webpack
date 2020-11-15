@@ -7,6 +7,7 @@ We continue from the previous article [basic setup webpack](https://blog.adev42.
 - [Setup Webpack with TypeScript](#setup-webpack-with-typescript)
   - [Install webpack and loader](#install-webpack-and-loader)
   - [Configuration](#configuration)
+  - [Explanation](#explanation)
 
 ## Install webpack and loader
 
@@ -128,7 +129,8 @@ Why this file? TypeScript is a strong type, it will not consider files as images
   console.log(`8 - 2 = ${subtract(8, 2)}`);
 
    ```
-- Create compileOption for TypeScript: `tsc --init` or create directly `tsconfig.json` in the root folder and paste the following code.
+- Create compileOption for TypeScript: `tsc --init` or create directly `tsconfig.json` in the root folder and paste the following code. This file contains de configuration to compile the TypeScript code to Js code.
+  
   ```json
   {
     "compilerOptions": {
@@ -153,3 +155,20 @@ Why this file? TypeScript is a strong type, it will not consider files as images
   ```
 
   For more information about [tsconfig](https://www.typescriptlang.org/tsconfig)
+
+## Explanation
+- `tsconfig.json`
+
+  First of all, we will understand how `tsconfig.json` file works?
+
+  - **target**: Version javascript that we want to build from TypeScript. Here is `ES6`
+  - **allowJs**: Allow use using `js` file in TypeScript project
+  - **strict**: `Strict mode` for Typescript
+  - **module**: After compiling the js, the codes will be written as ESNext module. There are many option here, but we do not recommend use the option `commonJS` because il will lose the [Tree-shaking](https://webpack.js.org/guides/tree-shaking/) feature of webpack. See this feature in [my previous post](https://blog.adev42.com/basic-setup-webpack#tree-shaking-in-webpack)
+  - **noImplicitAny**: Do not allow any implicit understanding
+  - **sourceMap**: easier to debug in dev enviroment. We need use it in both `tsconfig` and `webpack.config`
+  - **baseUrl**: The base path, usually "./". If you use the `path` option below, you must specify baseUrl
+  - **paths**: Create alias to facilitate import. For example, instead of using `../../../` now you can shorten it to `@/`. Configuring the alias in `tsconfig.json` just helps the editor to understand it, it doesn't work with webpack. So you have to configure with alias with the webpack below as well.
+  - **include**: Specifies the files to be used in the project.
+
+- `webpack.config.js`
