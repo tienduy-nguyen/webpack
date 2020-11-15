@@ -1,0 +1,23 @@
+$base-color: #c6538c;
+$red: red;
+$border-dark: rgba($base-color, 0.88);
+
+@font-face {
+  font-family: 'Big Noodles';
+  src: url('../fonts/big_noodle_titling.ttf');
+}
+
+body {
+  background-image: url('../images/cat.jpg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+h1,
+h2 {
+  color: $red;
+  font-family: 'Big Noodles';
+}
+.alert {
+  border: 1px solid $border-dark;
+}
