@@ -1,4 +1,4 @@
-import logo from './logo.png';
+import logo from '@@/src/logo.png';
 const component = (): HTMLElement => {
   const element: HTMLDivElement = document.createElement('div');
   const webpackLogo: HTMLImageElement = new Image();
