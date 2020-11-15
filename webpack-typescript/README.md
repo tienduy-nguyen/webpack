@@ -14,6 +14,7 @@ We continue from the previous article [basic setup webpack](https://blog.adev42.
     - [`webpack.config.js`](#webpackconfigjs)
       - [Code](#code-1)
       - [Explanation](#explanation-1)
+  - [Reference](#reference)
 
 ## Install webpack and loaders packages
 
@@ -33,7 +34,8 @@ We continue from the previous article [basic setup webpack](https://blog.adev42.
   $ yarn add html-webpack-plugin -D
   ```
 
-  Follow this article to understand why use this dev dependency.
+  This plugin will help use import automatically the new `bundle.js` file after build into `index.html` build file. You will see more explanation below.
+
 - Install TypeScript
   [TypeScript](https://www.typescriptlang.org/) extends JavaScript by adding types. By understanding JavaScript, TypeScript saves you time catching errors, debug adn providing fixes before you run code. Any browser, any OS, anywhere JavaScript runs.
 
@@ -70,7 +72,7 @@ We will create a simple project to understand each config for webpack project us
     </body>
   </html>
   ```
-  Notice: you can see, we don't import any `js` file. The reason will be explained below.
+  Notice: you can see, we don't import any `js` file. The reason is `HtmlWebpackPlugin`, will be explained below.
 
 - `src/add.ts`
   ```ts
@@ -281,7 +283,18 @@ module.exports = (env, agrv) => {
   - `output.publicPath`: the relative path from the `index.html` file pointing to the files in the **dist** directory after build. 
   
   For example: in the file `loadImage.js`, we import logo, the logo variable will be become: `output.publicPath + 'src/logo.png`. If after the build, we run the `index.html` file in a different location not in **the public directory**, we will accidentally make the logo variable wrong.
-  - `output.filename`: filename of js bundle after build
+  - `output.filename`: filename of js bundle after build.
+
+  Here we use `[hash:6]` means the bundle will add 6 random characters to the bundle file in each build (ex: `bundle.bbc536.js`). 
+
+  This is aimed at restricting your browser to cache Javascript when you update a new Javascript version for your website.
+
+  But we have a problem. Each time of build, we will have a new bundle file. So do we need edit the src of script import in the `public/index.html` file?
+
+  We don't. Because we use the plugin `HtmlWebpackPlugin`. It will help use create a new `index.html` file from the original html file.
+
+  This new `html` file will use the template as the `public/index.html` and automatically build to `dist/src/index.html` and import new `bundle.....js` file.
+
   - `output.environment`: By default, webpack will generate code using the ES6 syntax. If you don't want this, you can modify the target build by yourself in the `output.environment`
     - **arrowFunction**: support arrow function.
     - **bigIntLiteral**: support BigInt
@@ -301,3 +314,9 @@ module.exports = (env, agrv) => {
   - **devServer.hot**: The mode `hot reload`. By default, on the dev server, webpack will refresh the page every time when there is a slight change in the code. The `hot reload` helps use to see the change but don't need reload page.
   - **devServer.publicPath**: the relative path from root directory pointing to the build directory. Here is `/dist/` --> / is root folder
   - **devServer.watchContentBase**: If you have the change in the `index.html`, browser will reload automatically.
+## Reference
+- [Source code GitHub](https://github.com/tienduy-nguyen/webpack/tree/master/webpack-typescript)
+
+- [Previous post - basic setup webpack](https://blog.adev42.com/basic-setup-webpack)
+
+- [Ref](https://xdevclass.com/webpack-sieu-toc-2-cau-hinh-typescript-alias-hash-bundle/)
