@@ -64,3 +64,92 @@ We will create a simple project to understand each config for webpack project us
   </html>
   ```
   Notice: you can see, we don't import any `js` file. The reason will be explained below.
+
+- `src/add.ts`
+  ```ts
+  export const add = (a = 1, b = 2): number => a + b;
+  export const treeShaking = (): void => {
+    console.log('This phrase will not appear on build file');
+  };
+
+  ```
+
+- `src/app.d.ts`
+
+Why this file? TypeScript is a strong type, it will not consider files as images, videos as modules, and we can't import them. So we need declare the type for each file type.
+
+  ```ts
+  declare module  '*.png'{
+    const src: string;
+    export default src
+  }
+  declare module  '*.jpg'{
+    const src: string;
+    export default src
+  }
+  declare module  '*.jpeg'{
+    const src: string;
+    export default src
+  }
+  ```
+- `src/index.scss`
+  ```scss
+  $color: #ddd;
+  #root {
+    text-align: center;
+    background-color: $color;
+    padding: 100px;
+  }
+  ```
+- `src/loadImage.ts`
+  ```ts
+  import logo from './logo.png';
+  const component = (): HTMLElement => {
+    const element: HTMLDivElement = document.createElement('div');
+    const webpackLogo: HTMLImageElement = new Image();
+    webpackLogo.src = logo;
+    webpackLogo.width = 200;
+    element.appendChild(webpackLogo);
+    return element;
+  };
+  document.getElementById('root')?.appendChild(component());
+  ```
+- `src/subtract.ts`
+  ```ts
+  export const subtract = (a: number, b: number): number => a - b;
+  ```
+- `src/index.ts`
+   ```ts
+  import { subtract } from './subtract';
+  import { add } from './add';
+  import './loadImage';
+  import './index.scss';
+  console.log(`1 + 2 = ${add(1, 2)}`);
+  console.log(`8 - 2 = ${subtract(8, 2)}`);
+
+   ```
+- Create compileOption for TypeScript: `tsc --init` or create directly `tsconfig.json` in the root folder and paste the following code.
+  ```json
+  {
+    "compilerOptions": {
+      "target": "ES6",
+      "allowJs": true,
+      "strict": true,
+      "module": "ESNext",
+      "moduleResolution": "node",
+      "noImplicitAny": false,
+      "sourceMap": true,
+      "outDir": "./dist/",
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["src/*"],
+        "@@/*": ["./*"]
+      },
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true
+    },
+    "include": ["src/**/*"]
+  }
+  ```
+
+  For more information about [tsconfig](https://www.typescriptlang.org/tsconfig)
