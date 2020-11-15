@@ -12,6 +12,11 @@ If you do not have any knowledge about webpack, you can refer my two previous ar
 
 - [Webpack React Typescript](#webpack-react-typescript)
   - [Init project](#init-project)
+  - [Configuration](#configuration)
+    - [Config `tsconfig.json`](#config-tsconfigjson)
+    - [Config `webpack.config.js`](#config-webpackconfigjs)
+  - [Demo code](#demo-code)
+  - [Structure folder](#structure-folder)
 
 
 ## Init project
@@ -88,7 +93,313 @@ If you do not have any knowledge about webpack, you can refer my two previous ar
   ```
 - Add scripts to `package.json`
   ```json
-  scripts:{
-    
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "build:analyze": "webpack --mode production --env analyze",
+    "lint": "eslint --ext js,jsx,ts,tsx src/",
+    "lint:fix": "eslint --fix --ext js,jsx,ts,tsx src/",
+    "prettier": "prettier --check \"src/**/(*.tsx|*.ts|*.jsx|*.js|*.scss|*.css)\"",
+    "prettier:fix": "prettier --write \"src/**/(*.tsx|*.ts|*.jsx|*.js|*.scss|*.css)\""
+  },
+  ```
+
+## Configuration
+### Config `tsconfig.json`
+- Code
+  I will use TypeScript for this template, so I need a config file for TypeScript to compile JavaScript. If you want to use JavaScript, that will be very similar, you just need install `babel` and these loader. Check my [previous article](https://blog.adev42.com/basic-setup-webpack) for the details.
+
+  ```json
+  {
+    "compilerOptions": {
+      "target": "ES5",
+      "allowJs": true,
+      "strict": true,
+      "module": "ESNext",
+      "moduleResolution": "node",
+      "noImplicitAny": false,
+      "sourceMap": true,
+      "jsx": "react",
+      "allowSyntheticDefaultImports": true,
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["src/*"],
+        "@@/*": ["./*"]
+      }
+    },
+    "include": ["src/**/*"]
   }
   ```
+
+### Config `webpack.config.js`
+- Code
+  ```js
+  const path = require("path")
+  const webpack = require("webpack")
+  const HtmlWebpackPlugin = require("html-webpack-plugin")
+  const CopyPlugin = require("copy-webpack-plugin")
+  const Dotenv = require("dotenv-webpack")
+  const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+  const { CleanWebpackPlugin } = require("clean-webpack-plugin")
+  const CompressionPlugin = require("compression-webpack-plugin")
+  const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+    .BundleAnalyzerPlugin
+  module.exports = (env, agrv) => {
+    const isDev = agrv.mode === "development"
+    const isAnalyze = env && env.analyze
+    const basePlugins = [
+      new Dotenv(),
+      new HtmlWebpackPlugin({
+        template: "public/index.html"
+      }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: "**/*",
+            globOptions: {
+              ignore: ["index.html"]
+            },
+            to: "",
+            context: path.resolve("public")
+          }
+        ]
+      }),
+      new MiniCssExtractPlugin({
+        filename: isDev ? "[name].css" : "static/css/[name].[contenthash:6].css"
+      }),
+      new webpack.ProgressPlugin()
+    ]
+    let prodPlugins = [
+      ...basePlugins,
+      new CleanWebpackPlugin(),
+      new CompressionPlugin({
+        test: /\.(css|js|html|svg)$/
+      })
+    ]
+    if (isAnalyze) {
+      prodPlugins = [...prodPlugins, new BundleAnalyzerPlugin()]
+    }
+    return {
+      entry: "./src/index.tsx",
+      module: {
+        rules: [
+          {
+            test: /\.(ts|tsx)$/,
+            use: ["ts-loader", "eslint-loader"],
+            exclude: /node_modules/
+          },
+          {
+            test: /\.(s[ac]ss|css)$/,
+            use: [
+              MiniCssExtractPlugin.loader,
+              {
+                loader: "css-loader",
+                options: { sourceMap: isDev ? true : false }
+              },
+              {
+                loader: "sass-loader",
+                options: { sourceMap: isDev ? true : false }
+              }
+            ]
+          },
+          {
+            test: /\.(eot|ttf|woff|woff2)$/,
+            use: [
+              {
+                loader: "file-loader",
+                options: {
+                  name: isDev ? "[path][name].[ext]" : "static/fonts/[name].[ext]"
+                }
+              }
+            ]
+          },
+          {
+            test: /\.(png|svg|jpg|gif)$/,
+            use: [
+              {
+                loader: "file-loader",
+                options: {
+                  name: isDev
+                    ? "[path][name].[ext]"
+                    : "static/media/[name].[contenthash:6].[ext]"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      resolve: {
+        extensions: [".tsx", ".ts", ".jsx", ".js"],
+        alias: {
+          "@": path.resolve("src"),
+          "@@": path.resolve()
+        }
+      },
+      output: {
+        path: path.resolve("build"),
+        publicPath: "/",
+        filename: "static/js/main.[contenthash:6].js",
+        environment: {
+          arrowFunction: false,
+          bigIntLiteral: false,
+          const: false,
+          destructuring: false,
+          dynamicImport: false,
+          forOf: false,
+          module: false
+        }
+      },
+      devtool: isDev ? "source-map" : false,
+      devServer: {
+        contentBase: "public",
+        port: 3000,
+        hot: true,
+        watchContentBase: true,
+        historyApiFallback: true
+      },
+      plugins: isDev ? basePlugins : prodPlugins,
+      performance: {
+        maxEntrypointSize: 800000
+      }
+    }
+  }
+  ```
+- Explanation
+  
+  I have explain the details of many definition in the `webpack.config.js` file in my two previous article [setup webpack basic](https://blog.adev42.com/basic-setup-webpack) & [setup webpack typescript](https://blog.adev42.com/setup-webpack-with-typescript). In this article, I just explain the new definitions.
+  - `isDev`: We have 2 modes: **development** and **production** equivalent to dev and build. These two modes are passed through the `--mode` in the script in `package.json`.
+  - `isAnalyze`: 
+
+
+  
+## Demo code
+
+- Create `public/index.html`
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webpack</title>
+  </head>
+
+  <body>
+    <div id='root'>
+      <h1>Webpack React TypeScript</h1>
+    </div>
+  </body>
+
+  </html>
+  ```
+
+## Structure folder
+
+```tree
+.
+├── package.json
+├── public
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
+├── README.md
+├── src
+│   ├── apis
+│   │   ├── product.api.ts
+│   │   └── user.api.ts
+│   ├── App
+│   │   ├── App.actions.ts
+│   │   ├── App.constants.ts
+│   │   ├── App.reducer.ts
+│   │   └── App.tsx
+│   ├── assets
+│   │   ├── fonts
+│   │   │   ├── OpenSans-BoldItalic.ttf
+│   │   │   ├── OpenSans-Bold.ttf
+│   │   │   ├── OpenSans-ExtraBoldItalic.ttf
+│   │   │   ├── OpenSans-ExtraBold.ttf
+│   │   │   ├── OpenSans-Italic.ttf
+│   │   │   ├── OpenSans-LightItalic.ttf
+│   │   │   ├── OpenSans-Light.ttf
+│   │   │   ├── OpenSans-Regular.ttf
+│   │   │   ├── OpenSans-SemiBoldItalic.ttf
+│   │   │   └── OpenSans-SemiBold.ttf
+│   │   ├── images
+│   │   │   ├── home.svg
+│   │   │   ├── list.svg
+│   │   │   └── open-menu.svg
+│   │   └── scss
+│   │       └── index.scss
+│   ├── components
+│   │   ├── Header
+│   │   │   ├── Header.styles.ts
+│   │   │   └── Header.tsx
+│   │   ├── Loading
+│   │   │   └── Loading.tsx
+│   │   └── SideNav
+│   │       ├── SideNav.styles.ts
+│   │       └── SideNav.tsx
+│   ├── constants
+│   │   ├── paths.ts
+│   │   └── styles.ts
+│   ├── guards
+│   │   └── AuthenticatedGuard.tsx
+│   ├── helpers
+│   │   └── string.ts
+│   ├── hooks
+│   │   └── usePrevious.tsx
+│   ├── index.tsx
+│   ├── layouts
+│   │   └── MainLayout.tsx
+│   ├── logo.svg
+│   ├── pages
+│   │   ├── Home
+│   │   │   └── Home.tsx
+│   │   ├── Login
+│   │   │   ├── Login.actions.ts
+│   │   │   ├── Login.constants.ts
+│   │   │   ├── Login.reducer.ts
+│   │   │   ├── Login.styles.ts
+│   │   │   ├── Login.thunks.ts
+│   │   │   └── Login.tsx
+│   │   └── Product
+│   │       ├── ProductItem
+│   │       │   ├── ProductItem.actions.ts
+│   │       │   ├── ProductItem.constants.ts
+│   │       │   ├── ProductItem.reducer.ts
+│   │       │   ├── ProductItem.thunks.ts
+│   │       │   └── ProductItem.tsx
+│   │       └── ProductList
+│   │           ├── ProductList.actions.ts
+│   │           ├── ProductList.constants.ts
+│   │           ├── ProductList.reducer.ts
+│   │           ├── ProductList.styles.ts
+│   │           ├── ProductList.thunks.ts
+│   │           └── ProductList.tsx
+│   ├── react-app-env.d.ts
+│   ├── reducer
+│   │   └── reducer.ts
+│   ├── routes
+│   │   ├── HomeRoutes.tsx
+│   │   ├── LoginRoutes.tsx
+│   │   ├── ProductRoutes.tsx
+│   │   └── routes.tsx
+│   ├── serviceWorker.ts
+│   ├── setupTests.ts
+│   ├── store
+│   │   └── store.ts
+│   └── @types
+│       ├── action.d.ts
+│       ├── api.d.ts
+│       ├── files.d.ts
+│       ├── product.d.ts
+│       ├── reducer.d.ts
+│       └── user.d.ts
+├── tsconfig.json
+├── webpack.config.js
+└── yarn.lock
+```
