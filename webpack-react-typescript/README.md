@@ -17,6 +17,7 @@ If you do not have any knowledge about webpack, you can refer my two previous ar
     - [Config `webpack.config.js`](#config-webpackconfigjs)
   - [Demo code](#demo-code)
   - [Structure folder](#structure-folder)
+  - [Reference](#reference)
 
 
 ## Init project
@@ -419,3 +420,9 @@ If you do not have any knowledge about webpack, you can refer my two previous ar
 ├── webpack.config.js
 └── yarn.lock
 ```
+---
+Stay tunned to keep update my next articles and understand how I use the structures project like that.
+## Reference
+
+- [Gihub code demo](https://github.com/tienduy-nguyen)
+- [Ref](https://xdevclass.com/webpack-sieu-toc-3-cau-hinh-react-typescript-eslint-prettier-hoan-chinh-tu-a-z/)
